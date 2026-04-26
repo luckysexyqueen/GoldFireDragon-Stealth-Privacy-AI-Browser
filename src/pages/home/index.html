@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+
+    <!-- ═══ PWA Core ═══ -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#f59e0b" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+
+    <!-- ═══ PWA Icons ═══ -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/pwa/icon-96.png" />
+    <link rel="shortcut icon" href="/pwa/icon-96.png" />
+
+    <!-- ═══ Apple PWA / iOS ═══ -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="GoldFireDragon" />
+    <link rel="apple-touch-icon" href="/pwa/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/pwa/icon-152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/pwa/icon-144.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/pwa/icon-128.png" />
+    <link rel="apple-touch-startup-image" href="/pwa/icon-512.png" />
+
+    <!-- ═══ Android / Chrome ═══ -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="GoldFireDragon" />
+
+    <!-- ═══ Microsoft / Windows ═══ -->
+    <meta name="msapplication-TileImage" content="/pwa/icon-144.png" />
+    <meta name="msapplication-TileColor" content="#f59e0b" />
+    <meta name="msapplication-navbutton-color" content="#f59e0b" />
+    <meta name="msapplication-starturl" content="/" />
+
+    <!-- ═══ SEO + Social ═══ -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="MobileOptimized" content="width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="description" content="GoldFireDragon Browser — 프라이버시 중심 스텔스 브라우저. FireDragon UA 스푸핑, 추적 차단, Presearch/DuckDuckGo/Brave 등 5가지 검색엔진 지원" />
+    <meta name="keywords" content="GoldFireDragon,프라이버시 브라우저,스텔스 UA,검색엔진,추적 차단" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="GoldFireDragon Browser" />
+    <meta property="og:description" content="프라이버시 중심 스텔스 브라우저 — FireDragon UA, 추적 차단, 5가지 검색엔진" />
+    <meta property="og:image" content="/pwa/icon-512.png" />
+    <meta property="og:locale" content="ko_KR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="GoldFireDragon Browser" />
+    <meta name="twitter:description" content="프라이버시 중심 스텔스 브라우저" />
+    <meta name="twitter:image" content="/pwa/icon-512.png" />
+
+    <title>GoldFireDragon Browser — 스텔스 프라이버시 검색</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

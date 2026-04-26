@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#f59e0b" />
+  <title>오프라인 — GoldFireDragon</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100dvh;
+      background: #0a0a0a;
+      color: #f0f0f0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .logo-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #f59e0b, #dc2626);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.25);
+    }
+
+    .logo-icon {
+      font-size: 40px;
+      line-height: 1;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      max-width: 280px;
+      margin: 0 auto 32px;
+    }
+
+    .status-dots {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #333;
+    }
+    .dot.active {
+      background: #f59e0b;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .btn-retry {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #f59e0b, #dc2626);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-retry:hover { opacity: 0.88; }
+
+    .cached-notice {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #444;
+    }
+
+    .cached-notice span {
+      color: #666;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 20px;
+      font-size: 11px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="logo-wrap">
+    <span class="logo-icon">🔥</span>
+  </div>
+
+  <h1>GoldFireDragon</h1>
+  <p>현재 인터넷 연결이 없어요.<br>네트워크 상태를 확인하고 다시 시도해주세요.</p>
+
+  <div class="status-dots">
+    <div class="dot active" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+  </div>
+
+  <a class="btn-retry" href="/">
+    🔄 다시 시도
+  </a>
+
+  <p class="cached-notice">
+    캐시된 페이지는 오프라인에서도 <span>자동으로</span> 이용 가능해요.
+  </p>
+
+  <footer>GoldFireDragon PWA — Offline Mode</footer>
+
+  <script>
+    // Animate dots
+    const dots = [
+      document.getElementById('dot1'),
+      document.getElementById('dot2'),
+      document.getElementById('dot3'),
+    ];
+    let idx = 0;
+    setInterval(() => {
+      dots.forEach((d) => d.classList.remove('active'));
+      idx = (idx + 1) % dots.length;
+      dots[idx].classList.add('active');
+    }, 600);
+
+    // Auto-retry when back online
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+
+    // Check connectivity every 5s
+    setInterval(async () => {
+      try {
+        const res = await fetch('/', { method: 'HEAD', cache: 'no-store' });
+        if (res.ok) window.location.reload();
+      } catch (_) {}
+    }, 5000);
+  </script>
+</body>
+</html>
