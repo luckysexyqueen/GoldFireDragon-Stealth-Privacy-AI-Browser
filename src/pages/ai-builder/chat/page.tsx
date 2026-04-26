@@ -7,6 +7,7 @@ import { useScreenCapture } from '@/hooks/useScreenCapture';
 import { buildRoleplayPrompt } from '../components/RoleplaySettings';
 import { saveChatHistory, loadChatHistory } from '@/hooks/useLocalDB';
 import { streamOfflineResponse, ChatMessage as LLMMessage } from '@/hooks/useOfflineLLM';
+import { streamFreeAIResponse, getAvailableFreeAIService, FreeAIChatMessage } from '@/hooks/useFreeAI';
 import ChatFileUpload, { ChatUploadedFile, buildFileContext } from '@/components/feature/ChatFileUpload';
 
 interface Message {
@@ -373,6 +374,34 @@ export default function AIBuilderChatPage() {
       },
       8
     );
+
+    // Free AI 서비스가 설정된 경우 실제 API 호출로 업그레이드 시도
+    const freeServiceId = getAvailableFreeAIService();
+    if (freeServiceId && targetAgent.linkedModelId === '') {
+      // 로컬 모델이 없고 Free AI가 설정된 경우 Free AI 사용
+      setMessages((prev) => prev.map((m) => m.id === msgId ? { ...m, content: '' } : m));
+      const freeHistory: FreeAIChatMessage[] = [
+        { role: 'system', content: fullSystemPrompt },
+        ...messages.slice(-10).map(m => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content,
+        })),
+        { role: 'user', content: userInput + fileCtx },
+      ];
+      try {
+        await streamFreeAIResponse(
+          freeServiceId,
+          freeHistory,
+          (partial, done) => {
+            setMessages((prev) => prev.map((m) => m.id === msgId ? { ...m, content: partial } : m));
+            if (done) setIsGenerating(false);
+          }
+        );
+      } catch {
+        // Free AI 실패시 이미 오프라인 응답이 표시됨
+        setIsGenerating(false);
+      }
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

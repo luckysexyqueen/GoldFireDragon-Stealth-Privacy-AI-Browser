@@ -83,8 +83,7 @@ function JobCard({ job, onClear }: { job: ConvertJob; onClear: () => void }) {
               <div className="w-full bg-puma-card rounded-full h-1.5 overflow-hidden">
                 <div
                   className={`h-1.5 rounded-full transition-all duration-500 ${
-                    job.status === 'done' ? 'bg-green-400' :
-                    job.status === 'error' ? 'bg-red-400' : 'bg-puma-accent'
+                    job.status === 'done' ? 'bg-green-400' : 'bg-puma-accent'
                   }`}
                   style={{ width: `${job.progress}%` }}
                 ></div>

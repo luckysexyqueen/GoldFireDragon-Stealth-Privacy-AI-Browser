@@ -34,5 +34,13 @@
       "@/*": ["./src/*"],
     }
   },
-  "include": ["src", "vite-env.d.ts"]
+  "include": ["src", "vite-env.d.ts"],
+  "exclude": [
+    "src/pages/home/src",
+    "src/pages/home/supabase",
+    "src/pages/home/vite.config.ts",
+    "src/pages/home/postcss.config.ts",
+    "src/pages/home/eslint.config.ts",
+    "src/pages/home/tailwind.config.ts"
+  ]
 }

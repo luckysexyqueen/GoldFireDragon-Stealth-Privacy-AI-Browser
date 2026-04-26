@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactElement } from 'react';
 import Layout from '@/components/feature/Layout';
 import GeneralSettings from './components/GeneralSettings';
 import AIAssistantSettings from './components/AIAssistantSettings';
@@ -8,6 +9,7 @@ import WalletSettings from './components/WalletSettings';
 import SolanaSettings from './components/SolanaSettings';
 import IPFSSettings from './components/IPFSSettings';
 import PaymentBlockerSettings from './components/PaymentBlockerSettings';
+import PrivacyModeSettings from './components/PrivacyModeSettings';
 
 type SettingSection =
   | 'general'
@@ -15,6 +17,7 @@ type SettingSection =
   | 'prompts'
   | 'mcp'
   | 'payment-blocker'
+  | 'privacy'
   | 'wallet'
   | 'solana'
   | 'ipfs';
@@ -25,6 +28,7 @@ const aiToolsItems: { id: SettingSection; label: string; icon: string }[] = [
   { id: 'prompts', label: 'Prompts', icon: 'ri-file-text-line' },
   { id: 'mcp', label: 'MCP Server', icon: 'ri-server-line' },
   { id: 'payment-blocker', label: '자동결제 차단', icon: 'ri-shield-check-line' },
+  { id: 'privacy', label: '프라이버시 모드', icon: 'ri-shield-keyhole-line' },
 ];
 
 const cryptoItems: { id: SettingSection; label: string; icon: string }[] = [
@@ -33,12 +37,13 @@ const cryptoItems: { id: SettingSection; label: string; icon: string }[] = [
   { id: 'ipfs', label: 'IPFS Gateways', icon: 'ri-global-line' },
 ];
 
-const sectionComponents: Record<SettingSection, JSX.Element> = {
+const sectionComponents: Record<SettingSection, ReactElement> = {
   general: <GeneralSettings />,
   'ai-assistant': <AIAssistantSettings />,
   prompts: <PromptsSettings />,
   mcp: <MCPSettings />,
   'payment-blocker': <PaymentBlockerSettings />,
+  privacy: <PrivacyModeSettings />,
   wallet: <WalletSettings />,
   solana: <SolanaSettings />,
   ipfs: <IPFSSettings />,

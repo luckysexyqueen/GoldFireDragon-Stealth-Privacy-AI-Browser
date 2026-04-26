@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/feature/Layout';
 import { usePrompts } from '@/hooks/usePrompts';
 
@@ -27,11 +28,18 @@ export default function PromptsPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const navigate = useNavigate();
+
   const runPrompt = (id: string, content: string) => {
     navigator.clipboard.writeText(content);
     incrementUsage(id);
     setUsedId(id);
-    setTimeout(() => setUsedId(null), 2000);
+    // 프롬프트 내용을 세션스토리지에 저장하고 AI Assistant로 이동
+    sessionStorage.setItem('gfd_pending_prompt', content);
+    setTimeout(() => {
+      setUsedId(null);
+      navigate('/ai-assistant');
+    }, 400);
   };
 
   const handleAdd = () => {

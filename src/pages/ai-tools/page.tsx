@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import Layout from '@/components/feature/Layout';
 import ImageGenerator from './components/ImageGenerator';
+import { callFreeAISingle, getAvailableFreeAIService } from '@/hooks/useFreeAI';
+import { generateOfflineResponse } from '@/hooks/useOfflineLLM';
+import { getEffectiveSystemPrompt } from '@/hooks/useAISettings';
 
 const tools = [
   { id: 'image-gen', name: 'Image Generator', desc: 'AI 이미지 생성 (Anime/3D/Realistic + img2img + LoRA)', icon: 'ri-image-2-line', color: 'text-pink-400', bg: 'bg-pink-400/10' },
@@ -28,20 +31,41 @@ export default function AIToolsPage() {
     setIsProcessing(true);
     setOutput('');
 
-    await new Promise((r) => setTimeout(r, 1500));
+    const systemPrompt = getEffectiveSystemPrompt();
+    const freeServiceId = getAvailableFreeAIService();
 
-    const outputs: Record<string, string> = {
-      summarize: '• The text discusses key concepts in AI and machine learning\n• Main focus is on privacy-preserving techniques\n• Three core methodologies are presented\n• Conclusion emphasizes practical applications',
-      translate: `[Korean Translation]\n${input.slice(0, 50)}... → 이 텍스트는 AI 기술과 관련된 내용을 다루고 있습니다. 주요 개념들이 명확하게 설명되어 있으며...`,
-      qa: 'Based on the provided text, the main topic appears to be related to AI technology. The key points include privacy, local processing, and user control over data.',
-      rewrite: `[Professional Style]\n${input.slice(0, 30)}... The aforementioned content has been restructured to maintain a formal and professional tone while preserving the original meaning and intent.`,
-      extract: '{\n  "topics": ["AI", "Privacy", "Web3"],\n  "entities": ["Stealth Privacy AI Browser", "WebGPU"],\n  "dates": [],\n  "urls": []\n}',
-      code: '// Code Analysis:\n// - Function complexity: O(n)\n// - Potential improvements: Use const instead of let\n// - Missing error handling on line 3\n// - Consider adding TypeScript types',
-      sentiment: '📊 Sentiment Analysis:\n• Overall: Positive (78%)\n• Tone: Professional, Informative\n• Emotion: Neutral with slight enthusiasm\n• Confidence: High',
-      keywords: '🏷️ Keywords:\n1. artificial intelligence (high relevance)\n2. privacy protection (high relevance)\n3. local processing (medium relevance)\n4. web browser (medium relevance)\n5. data security (medium relevance)',
+    // 툴별 system prompt
+    const toolSystemPrompts: Record<string, string> = {
+      summarize: `${systemPrompt}\n\n당신은 텍스트 요약 전문가입니다. 핵심 내용을 불릿 포인트로 간결하게 요약하세요.`,
+      translate: `${systemPrompt}\n\n당신은 번역 전문가입니다. 요청한 언어로 자연스럽게 번역하세요. 대상 언어: ${targetLang}`,
+      qa: `${systemPrompt}\n\n당신은 Q&A 어시스턴트입니다. 제공된 텍스트를 기반으로 질문에 답변하세요.`,
+      rewrite: `${systemPrompt}\n\n당신은 콘텐츠 리라이터입니다. 내용을 유지하면서 더 명확하고 전문적으로 재작성하세요.`,
+      extract: `${systemPrompt}\n\n당신은 데이터 추출 전문가입니다. 텍스트에서 주제, 개체명, 날짜, URL, 키워드를 JSON으로 추출하세요.`,
+      code: `${systemPrompt}\n\n당신은 코드 분석 전문가입니다. 코드의 복잡도, 개선사항, 버그, 베스트 프랙티스를 분석하세요.`,
+      sentiment: `${systemPrompt}\n\n당신은 감성 분석 전문가입니다. 텍스트의 전반적 감성(긍정/부정/중립), 톤, 감정을 분석하세요.`,
+      keywords: `${systemPrompt}\n\n당신은 키워드 추출 전문가입니다. 텍스트에서 가장 중요한 키워드와 주제를 관련도 순으로 추출하세요.`,
     };
 
-    setOutput(outputs[activeTool ?? 'summarize'] ?? 'Processing complete.');
+    const toolId = activeTool ?? 'summarize';
+    const toolSysPrompt = toolSystemPrompts[toolId] || systemPrompt;
+
+    try {
+      if (freeServiceId) {
+        // 실제 Free AI API 호출
+        const result = await callFreeAISingle(freeServiceId, toolSysPrompt, input);
+        setOutput(result);
+      } else {
+        // 오프라인 LLM fallback
+        const localResult = generateOfflineResponse(input, [], {
+          modelName: 'Local AI',
+          systemPrompt: toolSysPrompt,
+        });
+        setOutput(localResult);
+      }
+    } catch (error) {
+      setOutput(`❌ 처리 오류: ${error instanceof Error ? error.message : '알 수 없는 오류'}\n\nSettings > AI Assistant > Free AI Services에서 API 키를 설정하면 실제 AI를 사용할 수 있습니다.`);
+    }
+
     setIsProcessing(false);
   };
 

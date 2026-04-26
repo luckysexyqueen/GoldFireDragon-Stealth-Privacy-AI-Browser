@@ -58,7 +58,7 @@ export function usePrivacyMode() {
   }, []);
 
   const disableAll = useCallback(() => {
-    const off = Object.fromEntries(Object.keys(defaults).map((k) => [k, false])) as PrivacySettings;
+    const off = Object.fromEntries(Object.keys(defaults).map((k) => [k, false])) as unknown as PrivacySettings;
     setSettings(off);
   }, []);
 

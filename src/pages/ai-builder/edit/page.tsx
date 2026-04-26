@@ -44,7 +44,7 @@ export default function AIBuilderEditPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSystemPresets, setShowSystemPresets] = useState(false);
   const [showInstructionPresets, setShowInstructionPresets] = useState(false);
-  const [activeSection, setActiveSection] = useState<'config' | 'prompt' | 'files' | 'model'>('config');
+  const [activeSection, setActiveSection] = useState<'config' | 'prompt' | 'files' | 'model' | 'roleplay'>('config');
 
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const systemRef = useRef<HTMLTextAreaElement>(null);

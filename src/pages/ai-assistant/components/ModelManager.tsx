@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { useRef, useState } from 'react';
 import { AIModel } from '../page';
 import {
@@ -266,7 +267,7 @@ interface ModelCardProps {
   isActive: boolean;
   onLoad: () => void;
   onDelete?: () => void;
-  getStatusBadge: (model: AIModel) => JSX.Element;
+  getStatusBadge: (model: AIModel) => ReactElement;
 }
 
 function ModelCard({ model, isActive, onLoad, onDelete, getStatusBadge }: ModelCardProps) {

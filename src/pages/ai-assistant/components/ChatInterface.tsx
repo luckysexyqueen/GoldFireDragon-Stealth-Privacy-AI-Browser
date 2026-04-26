@@ -4,6 +4,7 @@ import { getEffectiveSystemPrompt } from '@/hooks/useAISettings';
 import { useScreenCapture } from '@/hooks/useScreenCapture';
 import { getPrivacySettings } from '@/hooks/usePrivacyMode';
 import { streamOfflineResponse, ChatMessage as LLMMessage } from '@/hooks/useOfflineLLM';
+import { streamFreeAIResponse, FreeAIChatMessage } from '@/hooks/useFreeAI';
 import ChatFileUpload, { ChatUploadedFile, buildFileContext } from '@/components/feature/ChatFileUpload';
 
 interface Message {
@@ -96,6 +97,20 @@ export default function ChatInterface({ activeModel, activeFreeService, onSelect
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Prompts 페이지에서 전달된 프롬프트 자동 입력
+  useEffect(() => {
+    const pending = sessionStorage.getItem('gfd_pending_prompt');
+    if (pending) {
+      setInput(pending);
+      sessionStorage.removeItem('gfd_pending_prompt');
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+        textareaRef.current.focus();
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -175,20 +190,32 @@ export default function ChatInterface({ activeModel, activeFreeService, onSelect
         return;
       }
 
-      // Free AI service fallback
-      const responses = [
-        `안녕하세요! **${modelName}** AI입니다.${isPrivate ? ' 🔒 프라이빗 모드 활성화.' : ''} 무엇을 도와드릴까요?\n\n코드 작성, 번역, 분석, 글쓰기 등 다양한 작업을 도와드릴 수 있습니다.`,
-        `${nsfwEnabled ? '🔞 무검열 모드로 ' : ''}**${modelName}**으로 처리하겠습니다.${isPrivate ? ' 🔒 완전 격리 환경.' : ''}\n\n더 구체적인 내용을 알려주시면 정확한 답변을 드릴 수 있습니다.`,
-      ];
-      const response = applyPrivacyToResponse(
-        responses[Math.floor(Math.random() * responses.length)],
-        isPrivate
-      );
-      let streamed = '';
-      for (let i = 0; i < response.length; i++) {
-        await new Promise((r) => setTimeout(r, 10));
-        streamed += response[i];
-        setMessages((prev) => prev.map((m) => m.id === assistantMsgId ? { ...m, content: streamed } : m));
+      // Free AI service - 실제 API 호출
+      if (activeFreeService) {
+        const freeHistory: FreeAIChatMessage[] = [
+          { role: 'system', content: systemPrompt },
+          ...messages.slice(-10).map(m => ({
+            role: m.role as 'user' | 'assistant',
+            content: m.content,
+          })),
+          { role: 'user', content: userContent + fileCtx },
+        ];
+
+        try {
+          await streamFreeAIResponse(
+            activeFreeService.id,
+            freeHistory,
+            (partial, done) => {
+              const finalText = isPrivate ? applyPrivacyToResponse(partial, isPrivate) : partial;
+              setMessages((prev) => prev.map((m) => m.id === assistantMsgId ? { ...m, content: finalText } : m));
+              if (done) setIsGenerating(false);
+            }
+          );
+          return;
+        } catch (error) {
+          const errMsg = `❌ **${activeFreeService.name} 오류**\n\n${error instanceof Error ? error.message : '알 수 없는 오류'}\n\n[Settings > AI Assistant > Free AI Services]에서 API 키를 확인해주세요.`;
+          setMessages((prev) => prev.map((m) => m.id === assistantMsgId ? { ...m, content: errMsg } : m));
+        }
       }
     }
     setIsGenerating(false);
