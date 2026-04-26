@@ -1,0 +1,17 @@
+{
+  "name": "LocalAI Engine",
+  "short_name": "LocalAI",
+  "description": "WebGPU + GGUF + ONNX 로컬 AI 엔진",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#00d4aa",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}
